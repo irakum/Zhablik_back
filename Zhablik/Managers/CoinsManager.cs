@@ -20,7 +20,7 @@ public class CoinsManager
         }
         else
         {
-            Console.WriteLine("You don't have enough coins.");
+            throw new InvalidOperationException("Not enough coins.");
         }
     }
 
@@ -33,7 +33,7 @@ public class CoinsManager
         }
         else
         {
-            Console.WriteLine("You don't have enough coins.");
+            throw new InvalidOperationException("Not enough coins.");
         }
     }
 }

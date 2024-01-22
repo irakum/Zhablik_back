@@ -4,12 +4,11 @@ public class Assignment
 {
     public Guid TaskID { get; private set; }
     public Guid UserID { get; private set; }
-    public string Title { get; private set; }
-    public string Description { get; private set; }
-    public DateTime DueDate { get; private set; }
-    public int Level { get; private set; }
-    public bool IsComplete { get; private set; }
-
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public DateTime DueDate { get; set; }
+    public int Level { get; set; }
+    public bool IsComplete { get; set; }
     public Assignment(Guid userID, string title, string description, DateTime dueDate, int level)
     {
         TaskID = Guid.NewGuid();
