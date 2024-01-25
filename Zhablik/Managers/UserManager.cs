@@ -1,13 +1,18 @@
 using Zhablik.Models;
-using Zhablik.Managers;
 
 namespace Zhablik.Managers;
 
 public class UserManager
 {
     private static Dictionary<string, User> _users = new();
+    private readonly TaskManager _taskManager;
 
-    public static User CreateUser(string username, string email, string password)
+    public UserManager(TaskManager taskManager)
+    {
+        _taskManager = taskManager;
+    }
+
+    public User CreateUser(string username, string email, string password)
     {
         if (_users.ContainsKey(username))
         {
@@ -21,7 +26,7 @@ public class UserManager
         return user;
     }
 
-    public static User GetUser(string username)
+    public User GetUser(string username)
     {
         if (!_users.ContainsKey(username))
         {
@@ -31,7 +36,7 @@ public class UserManager
         return _users[username];
     }
 
-    public static void UpdateUser(string username, User user)
+    public void UpdateUser(string username, User user)
     {
         if (!_users.ContainsKey(username))
         {
@@ -41,7 +46,7 @@ public class UserManager
         _users[username] = user;
     }
 
-    public static void DeleteUser(string username)
+    public void DeleteUser(string username)
     {
         if (!_users.ContainsKey(username))
         {
@@ -49,7 +54,7 @@ public class UserManager
         }
         foreach (var task in _users[username].Tasks)
         {
-            TaskManager.DeleteTask(task.TaskID.ToString());
+            _taskManager.DeleteTask(task.TaskID.ToString());
         }
         
         _users.Remove(username);

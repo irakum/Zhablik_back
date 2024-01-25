@@ -4,19 +4,20 @@ namespace Zhablik.Managers;
 
 public class CoinsManager
 {
-    private Dictionary<string, User> _users { get; set; } = new();
+    private Dictionary<string, User> Users { get; set; } = new();
+    private Dictionary<string, FrogInfo> Frogs { get; set; } = new();
 
     public void EarnCoins(User user, int taskLevel)
     {
         user.Coins += taskLevel * 10;
     }
 
-    public void BuyFrog(User user, Frog frog)
+    public void BuyFrog(User user, FrogInfo frogInfo)
     {
-        if (user.Coins >= frog.Price)
+        if (user.Coins >= frogInfo.Price)
         {
-            user.Coins -= frog.Price;
-            user.Frogs.Add(frog);
+            user.Coins -= frogInfo.Price;
+            user.Frogs.Add(new UserFrog(user, frogInfo));
         }
         else
         {
@@ -24,12 +25,12 @@ public class CoinsManager
         }
     }
 
-    public void UpgradeFrog(User user, Frog frog)
+    public void UpgradeFrog(User user, UserFrog userFrog)
     {
-        if (user.Coins >= frog.UpdatePrice)
+        if (user.Coins >= userFrog.FrogInfo.UpgradePrice)
         {
-            user.Coins -= frog.UpdatePrice;
-            frog.Level += 1;
+            user.Coins -= userFrog.FrogInfo.UpgradePrice;
+            userFrog.Level += 1;
         }
         else
         {

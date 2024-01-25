@@ -4,14 +4,14 @@ namespace Zhablik.Managers;
 
 public class AuthenticationManager
 {
-    private Dictionary<string, User> Users { get; set; }
+    private Dictionary<string, User?> Users { get; set; }
 
     public AuthenticationManager()
     {
-        Users = new Dictionary<string, User>();
+        Users = new Dictionary<string, User?>();
     }
 
-    public User Register(string username, string email, string password)
+    public User? Register(string username, string email, string password)
     {
         if (Users.ContainsKey(username))
         {
@@ -24,7 +24,7 @@ public class AuthenticationManager
         return user;
     }
 
-    public User Login(string username, string password)
+    public User? Login(string username, string password)
     {
         if (!Users.ContainsKey(username))
         {
@@ -34,7 +34,7 @@ public class AuthenticationManager
 
         var user = Users[username];
 
-        if (user.Password != password)
+        if (user?.Password != password)
         {
             Console.WriteLine("Incorrect password.");
             return null;

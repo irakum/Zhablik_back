@@ -1,16 +1,34 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Zhablik.Models;
 
 public class User
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid UserID { get; private set; }
-    public string Username { get; private set; }
-    public string Password { get; private set; }
-    public string Email { get; private set; }
+
+    [Required]
+    [MaxLength(255)]
+    public string Username { get; set; }
+
+    [Required]
+    [MaxLength(255)]
+    public string Password { get; set; }
+
+    [Required]
+    [MaxLength(255)]
+    public string Email { get; set; }
     public bool Authenticated { get; set; }
     public int Coins { get; set; }
     public List<Assignment> Tasks { get; set; }
-    public List<Frog> Frogs { get; set; }
+    public List<UserFrog> Frogs { get; set; }
 
+    public User()
+    {
+        
+    }
     public User(string username, string email, string password)
     {
         UserID = Guid.NewGuid();
@@ -20,7 +38,7 @@ public class User
         Authenticated = false;
         Coins = 0;
         Tasks = new List<Assignment>();
-        Frogs = new List<Frog>();
+        Frogs = new List<UserFrog>();
     }
 
     public bool Authenticate(string username, string password)
