@@ -6,8 +6,9 @@ public class StatisticsManager
 {
     private Dictionary<string, User> _users { get; set; } = new();
 
-    public static Dictionary<string, int> GetDailyStats(User user, DateTime currentDate = default)
+    public Dictionary<string, int> GetDailyStats(string username, DateTime currentDate = default)
     {
+        User user = _users[username]; 
         int tasksDone = 0;
         int tasksAssigned = 0;
         int coinsEarned = 0;
@@ -40,7 +41,7 @@ public class StatisticsManager
     }
 
 
-    public Dictionary<string, int> GetWeeklyStatistics(User user)
+    public Dictionary<string, int> GetWeeklyStatistics(string username)
     {
         int tasksDone = 0;
         int tasksAssigned = 0;
@@ -49,7 +50,7 @@ public class StatisticsManager
 
         foreach (var day in DateManager.GetDaysOfWeek(DateTime.Today))
         {
-            daily = GetDailyStats(user, day);
+            daily = GetDailyStats(username, day);
             tasksDone += daily["TasksDone"];
             tasksAssigned += daily["TasksAssigned"];
             coinsEarned += daily["coinsEarned"];
@@ -63,7 +64,7 @@ public class StatisticsManager
         };
     }
 
-    public Dictionary<string, int> GetMonthlyStatistics(User user)
+    public Dictionary<string, int> GetMonthlyStatistics(string username)
     {
         int tasksDone = 0;
         int tasksAssigned = 0;
@@ -72,7 +73,7 @@ public class StatisticsManager
 
         foreach (var day in DateManager.GetDaysOfMonth(DateTime.Today))
         {
-            daily = GetDailyStats(user, day);
+            daily = GetDailyStats(username, day);
             tasksDone += daily["TasksDone"];
             tasksAssigned += daily["TasksAssigned"];
             coinsEarned += daily["coinsEarned"];

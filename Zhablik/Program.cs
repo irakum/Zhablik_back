@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore;
 
-namespace Zhablik;
+namespace Zhablik; //some comment
 
 public static class Program
 {
