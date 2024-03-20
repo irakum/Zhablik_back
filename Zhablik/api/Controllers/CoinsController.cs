@@ -16,12 +16,12 @@ public class CoinsController : ControllerBase
         _coinsManager = coinsManager;
     }
     
-    [HttpPatch("buy-frog")]
-    public IActionResult BuyFrog([FromBody] User user, [FromBody] FrogInfo frogInfo)
+    [HttpPatch("{userId}")]
+    public IActionResult BuyFrog([FromRoute] int userId, [FromBody] FrogInfo frogInfo)
     {
         try
         {
-            _coinsManager.BuyFrog(user, frogInfo);
+            _coinsManager.BuyFrog(userId, frogInfo);
             return Ok();
         }
         catch (InvalidOperationException ex)

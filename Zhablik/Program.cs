@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 
-namespace Zhablik; //some comment
+namespace Zhablik;
 
 public static class Program
 {
@@ -11,5 +12,6 @@ public static class Program
 
     private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
         WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>();
+            .UseStartup<Startup>()
+            .UseUrls("http://*:" + Environment.GetEnvironmentVariable("PORT"));
 }

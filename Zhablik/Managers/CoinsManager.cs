@@ -12,8 +12,9 @@ public class CoinsManager
         user.Coins += taskLevel * 10;
     }
 
-    public void BuyFrog(User user, FrogInfo frogInfo)
+    public void BuyFrog(int userId, FrogInfo frogInfo)
     {
+        User user = Users[userId.ToString()];
         if (user.Coins >= frogInfo.Price)
         {
             user.Coins -= frogInfo.Price;
