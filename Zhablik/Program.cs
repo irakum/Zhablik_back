@@ -12,6 +12,5 @@ public static class Program
 
     private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
         WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>()
-            .UseUrls("http://*:" + Environment.GetEnvironmentVariable("PORT"));
+            .UseStartup<Startup>();
 }
