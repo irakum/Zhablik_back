@@ -16,7 +16,7 @@ public class CoinsController : ControllerBase
         _coinsManager = coinsManager;
     }
     
-    [HttpPatch("{userId}")]
+    [HttpPatch("{userId}/buy")]
     public IActionResult BuyFrog([FromRoute] int userId, [FromBody] FrogInfo frogInfo)
     {
         try
@@ -30,12 +30,12 @@ public class CoinsController : ControllerBase
         }
     }
 
-    [HttpPatch("upgrade-frog")]
-    public IActionResult UpgradeFrog([FromBody] User user, [FromBody] UserFrog frog)
+    [HttpPatch("{userId}/upgrade")]
+    public IActionResult UpgradeFrog([FromRoute] int userId, [FromBody] UserFrog frog)
     {
         try
         {
-            _coinsManager.UpgradeFrog(user, frog);
+            _coinsManager.UpgradeFrog(userId, frog);
             return Ok();
         }
         catch (InvalidOperationException ex)

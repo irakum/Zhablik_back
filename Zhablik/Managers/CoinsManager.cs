@@ -26,8 +26,9 @@ public class CoinsManager
         }
     }
 
-    public void UpgradeFrog(User user, UserFrog userFrog)
+    public void UpgradeFrog(int userId, UserFrog userFrog)
     {
+        User user = Users[userId.ToString()];
         if (user.Coins >= userFrog.FrogInfo.UpgradePrice)
         {
             user.Coins -= userFrog.FrogInfo.UpgradePrice;

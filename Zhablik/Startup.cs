@@ -24,6 +24,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
+        services.AddSwaggerGen();
 
         var migrationAssembly = typeof(AppDbContext).Assembly.GetName().Name;
         services.AddDbContext<AppDbContext>(options =>
