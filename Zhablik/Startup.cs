@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Hosting.Internal;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Zhablik.Data;
+using Zhablik.Managers;
 
 namespace Zhablik;
 
@@ -25,6 +26,23 @@ public class Startup
     {
         services.AddControllers();
         services.AddSwaggerGen();
+        
+        services.AddScoped<AuthenticationManager>();
+        services.AddScoped<CoinsManager>();
+        services.AddScoped<DateManager>();
+        services.AddScoped<TaskManager>();
+        services.AddScoped<UserManager>();
+        
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowLocalhost",
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000") // Adjust port as needed
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+        });
 
         var migrationAssembly = typeof(AppDbContext).Assembly.GetName().Name;
         services.AddDbContext<AppDbContext>(options =>
@@ -46,8 +64,10 @@ public class Startup
             app.UseExceptionHandler("/Home/Error");
             app.UseHsts();
         }
+        
+        app.UseCors("AllowLocalhost");
 
-      //  app.UseHttpsRedirection();
+        app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         app.UseRouting();
