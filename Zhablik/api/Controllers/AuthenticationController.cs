@@ -34,7 +34,8 @@ namespace Zhablik.api.Controllers
             {
                 return NotFound("User not found or incorrect password.");
             }
-            return Ok(user);
+            
+            return Ok(new { formData = new { Username = request.Username, Password = request.Password } });
         }
     }
 }
