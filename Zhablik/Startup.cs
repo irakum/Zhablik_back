@@ -65,12 +65,14 @@ public class Startup
             app.UseHsts();
         }
         
-        app.UseCors("AllowLocalhost");
+       
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         app.UseRouting();
+        
+        app.UseCors("AllowLocalhost");
 
         app.UseAuthentication();
         app.UseAuthorization();
