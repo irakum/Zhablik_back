@@ -33,7 +33,7 @@ public class UserController : ControllerBase
         }
     }
     
-    [HttpPost("login")]
+    [HttpPost("logi")]
     public IActionResult Login(string username, string password)
     {
         try

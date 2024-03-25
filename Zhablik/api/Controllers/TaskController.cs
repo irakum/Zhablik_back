@@ -16,6 +16,13 @@ public class TaskController : ControllerBase
     {
         _taskManager = taskManager;
     }
+    
+    [HttpGet("api/tasks/{userId}")]
+    public IActionResult GetTasksForUser(Guid userId)
+    {
+        var tasks = _taskManager.GetTasksByUsername(userId);
+        return Ok(new { tasks });
+    }
 
     [HttpPost("create")]
     public IActionResult CreateTask(Guid userID, string title, string description, DateTime dueDate, int level,
@@ -76,7 +83,7 @@ public class TaskController : ControllerBase
     }
 
     [HttpDelete("{taskId}")]
-    public IActionResult DeleteUser(string taskId)
+    public IActionResult DeleteTask(string taskId)
     {
         try
         {

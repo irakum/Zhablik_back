@@ -5,6 +5,15 @@ namespace Zhablik.Managers;
 public class TaskManager
 {
     private static Dictionary<string, Assignment> tasks = new Dictionary<string, Assignment>();
+
+    public List<Assignment> GetTasksByUsername(Guid userId)
+    {
+        var res = tasks.Values
+            .Where(t => t.UserID == userId)
+            .ToList();
+
+        return res;
+    }
     
     public Assignment CreateTask(Guid userID, string title, string description, DateTime dueDate, int level,
         bool isRepetitive=false, int repetitions=0, TimeSpan repetitiveness=default)
