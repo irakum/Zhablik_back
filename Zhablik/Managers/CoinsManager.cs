@@ -1,42 +1,65 @@
+using System;
+using System.Linq;
+using Zhablik.Data;
 using Zhablik.Models;
 
-namespace Zhablik.Managers;
-
-public class CoinsManager
+namespace Zhablik.Managers
 {
-    private Dictionary<string, User> Users { get; set; } = new();
-    private Dictionary<string, FrogInfo> Frogs { get; set; } = new();
-
-    public void EarnCoins(User user, int taskLevel)
+    public class CoinsManager
     {
-        user.Coins += taskLevel * 10;
-    }
+        private readonly AppDbContext _context;
 
-    public void BuyFrog(int userId, FrogInfo frogInfo)
-    {
-        User user = Users[userId.ToString()];
-        if (user.Coins >= frogInfo.Price)
+        public CoinsManager(AppDbContext context)
         {
-            user.Coins -= frogInfo.Price;
-            user.Frogs.Add(new UserFrog(user, frogInfo));
+            _context = context;
         }
-        else
-        {
-            throw new InvalidOperationException("Not enough coins.");
-        }
-    }
 
-    public void UpgradeFrog(int userId, UserFrog userFrog)
-    {
-        User user = Users[userId.ToString()];
-        if (user.Coins >= userFrog.FrogInfo.UpgradePrice)
+        public void EarnCoins(User user, int taskLevel)
         {
-            user.Coins -= userFrog.FrogInfo.UpgradePrice;
-            userFrog.Level += 1;
+            user.Coins += taskLevel * 10;
+            _context.SaveChanges();
         }
-        else
+
+        public void BuyFrog(string userId, FrogInfo frogInfo)
         {
-            throw new InvalidOperationException("Not enough coins.");
+            Guid id = new Guid(userId);
+            var user = _context.Users.FirstOrDefault(u => u.UserID == id);
+            if (user == null)
+            {
+                throw new InvalidOperationException($"User with ID {userId} not found.");
+            }
+
+            if (user.Coins >= frogInfo.Price)
+            {
+                user.Coins -= frogInfo.Price;
+                user.Frogs.Add(new UserFrog { User = user, FrogInfo = frogInfo });
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new InvalidOperationException("Not enough coins.");
+            }
+        }
+
+        public void UpgradeFrog(string userId, UserFrog userFrog)
+        {
+            Guid id = new Guid(userId);
+            var user = _context.Users.FirstOrDefault(u => u.UserID == id);
+            if (user == null)
+            {
+                throw new InvalidOperationException($"User with ID {userId} not found.");
+            }
+
+            if (user.Coins >= userFrog.FrogInfo.UpgradePrice)
+            {
+                user.Coins -= userFrog.FrogInfo.UpgradePrice;
+                userFrog.Level += 1;
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new InvalidOperationException("Not enough coins.");
+            }
         }
     }
 }

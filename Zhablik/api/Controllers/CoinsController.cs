@@ -17,7 +17,7 @@ public class CoinsController : ControllerBase
     }
     
     [HttpPatch("{userId}/buy")]
-    public IActionResult BuyFrog([FromRoute] int userId, [FromBody] FrogInfo frogInfo)
+    public IActionResult BuyFrog([FromRoute] string userId, [FromBody] FrogInfo frogInfo)
     {
         try
         {
@@ -31,7 +31,7 @@ public class CoinsController : ControllerBase
     }
 
     [HttpPatch("{userId}/upgrade")]
-    public IActionResult UpgradeFrog([FromRoute] int userId, [FromBody] UserFrog frog)
+    public IActionResult UpgradeFrog([FromRoute] string userId, [FromBody] UserFrog frog)
     {
         try
         {

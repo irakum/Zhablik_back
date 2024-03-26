@@ -1,45 +1,49 @@
+using System;
+using System.Linq;
+using Zhablik.Data;
 using Zhablik.Models;
 
-namespace Zhablik.Managers;
-
-public class AuthenticationManager
+namespace Zhablik.Managers
 {
-    private Dictionary<string, User?> Users { get; set; }
-
-    public AuthenticationManager()
+    public class AuthenticationManager
     {
-        Users = new Dictionary<string, User?>();
-    }
+        private readonly AppDbContext _context;
 
-    public User? Register(string username, string email, string password)
-    {
-        if (Users.ContainsKey(username))
+        public AuthenticationManager(AppDbContext context)
         {
-            Console.WriteLine("Username already exists.");
-            return null;
+            _context = context;
         }
 
-        var user = new User(username, email, password);
-        Users.Add(username, user);
-        return user;
-    }
-
-    public User? Login(string username, string password)
-    {
-        if (!Users.ContainsKey(username))
+        public User? Register(string username, string email, string password)
         {
-            Console.WriteLine("User not found.");
-            return null;
+            if (_context.Users.Any(u => u.Username == username))
+            {
+                Console.WriteLine("Username already exists.");
+                return null;
+            }
+
+            var user = new User(username, email, password);
+            _context.Users.Add(user);
+            _context.SaveChanges();
+            return user;
         }
 
-        var user = Users[username];
-
-        if (user?.Password != password)
+        public User? Login(string username, string password)
         {
-            Console.WriteLine("Incorrect password.");
-            return null;
-        }
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (user == null)
+            {
+                Console.WriteLine("User not found.");
+                return null;
+            }
 
-        return user;
+            if (user.Password != password)
+            {
+                Console.WriteLine("Incorrect password.");
+                return null;
+            }
+
+            return user;
+        }
     }
 }

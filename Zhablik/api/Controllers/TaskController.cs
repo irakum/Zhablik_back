@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Cors;
 using Zhablik.Managers;
 using Zhablik.Models;
 
@@ -8,6 +9,7 @@ namespace Zhablik.api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[EnableCors("AllowLocalhost")]
 public class TaskController : ControllerBase
 {
     private readonly TaskManager _taskManager;
@@ -45,7 +47,7 @@ public class TaskController : ControllerBase
     {
         try
         {
-            _taskManager.UpdateTaskDescription(taskId, description);
+            _taskManager.UpdateTaskDescription(new Guid(taskId), description);
             return Ok();
         }
         catch (InvalidOperationException ex)
@@ -59,7 +61,7 @@ public class TaskController : ControllerBase
     {
         try
         {
-            _taskManager.UpdateTaskTitle(taskId, title);
+            _taskManager.UpdateTaskTitle( new Guid(taskId), title);
             return Ok();
         }
         catch (InvalidOperationException ex)
@@ -73,7 +75,7 @@ public class TaskController : ControllerBase
     {
         try
         {
-            _taskManager.UpdateTaskDate(taskId, date);
+            _taskManager.UpdateTaskDate(new Guid(taskId), date);
             return Ok();
         }
         catch (InvalidOperationException ex)
@@ -87,7 +89,7 @@ public class TaskController : ControllerBase
     {
         try
         {
-            _taskManager.DeleteTask(taskId);
+            _taskManager.DeleteTask(new Guid(taskId));
             return Ok();
         }
         catch (InvalidOperationException ex)

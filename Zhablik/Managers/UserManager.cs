@@ -1,62 +1,80 @@
+using System;
+using System.Linq;
+using Zhablik.Data;
 using Zhablik.Models;
 
-namespace Zhablik.Managers;
-
-public class UserManager
+namespace Zhablik.Managers
 {
-    private static Dictionary<string, User> _users = new();
-    private readonly TaskManager _taskManager;
-
-    public UserManager(TaskManager taskManager)
+    public class UserManager
     {
-        _taskManager = taskManager;
-    }
+        private readonly AppDbContext _context;
 
-    public User CreateUser(string username, string email, string password)
-    {
-        if (_users.ContainsKey(username))
+        public UserManager(AppDbContext context)
         {
-            throw new InvalidOperationException($"User {username} already exists.");
+            _context = context;
         }
 
-        var user = new User(username, email, password);
-
-        _users.Add(username, user);
-
-        return user;
-    }
-
-    public User GetUser(string username)
-    {
-        if (!_users.ContainsKey(username))
+        public User CreateUser(string username, string email, string password)
         {
-            throw new InvalidOperationException($"User {username} does not exist.");
+            if (_context.Users.Any(u => u.Username == username))
+            {
+                throw new InvalidOperationException($"User {username} already exists.");
+            }
+
+            var user = new User
+            {
+                Username = username,
+                Email = email,
+                Password = password
+            };
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            return user;
         }
 
-        return _users[username];
-    }
-
-    public void UpdateUser(string username, User user)
-    {
-        if (!_users.ContainsKey(username))
+        public User GetUser(string username)
         {
-            throw new InvalidOperationException($"User {username} does not exist.");
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (user == null)
+            {
+                throw new InvalidOperationException($"User {username} does not exist.");
+            }
+
+            return user;
         }
 
-        _users[username] = user;
-    }
+        public void UpdateUser(string username, User user)
+        {
+            var existingUser = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (existingUser == null)
+            {
+                throw new InvalidOperationException($"User {username} does not exist.");
+            }
 
-    public void DeleteUser(string username)
-    {
-        if (!_users.ContainsKey(username))
-        {
-            throw new InvalidOperationException($"User {username} does not exist.");
+            existingUser.Username = user.Username;
+            existingUser.Email = user.Email;
+            existingUser.Password = user.Password;
+
+            _context.SaveChanges();
         }
-        foreach (var task in _users[username].Tasks)
+
+        public void DeleteUser(string username)
         {
-            _taskManager.DeleteTask(task.TaskID.ToString());
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (user == null)
+            {
+                throw new InvalidOperationException($"User {username} does not exist.");
+            }
+
+            foreach (var task in user.Tasks.ToList())
+            {
+                _context.Tasks.Remove(task);
+            }
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
         }
-        
-        _users.Remove(username);
     }
 }

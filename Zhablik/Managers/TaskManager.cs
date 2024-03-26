@@ -1,14 +1,20 @@
+using Zhablik.Data;
 using Zhablik.Models;
 
 namespace Zhablik.Managers;
 
 public class TaskManager
 {
-    private static Dictionary<string, Assignment> tasks = new Dictionary<string, Assignment>();
+    private readonly AppDbContext _context;
+
+    public TaskManager(AppDbContext context)
+    {
+        _context = context;
+    }
 
     public List<Assignment> GetTasksByUsername(Guid userId)
     {
-        var res = tasks.Values
+        var res = _context.Tasks
             .Where(t => t.UserID == userId)
             .ToList();
 
@@ -18,53 +24,73 @@ public class TaskManager
     public Assignment CreateTask(Guid userID, string title, string description, DateTime dueDate, int level,
         bool isRepetitive=false, int repetitions=0, TimeSpan repetitiveness=default)
     {
-        Assignment task = new Assignment(userID, title, description, dueDate, level);
+        var task = new Assignment
+        {
+            UserID = userID,
+            Title = title,
+            Description = description,
+            DueDate = dueDate,
+            Level = level,
+            IsComplete = false
+        };
+
+        _context.Tasks.Add(task);
+        _context.SaveChanges();
+
         if (isRepetitive)
         {
             for (int i = 0; i < repetitions; i++)
             {
                 CreateTask(userID, title, description, 
-                    dueDate+TimeSpan.FromTicks(repetitiveness.Ticks * (i+1)), level);
+                    dueDate + TimeSpan.FromTicks(repetitiveness.Ticks * (i + 1)), level);
             }
         }
-        
-        tasks[task.TaskID.ToString()] = task;
+
         return task;
     }
 
-    public void UpdateTaskDescription(string taskId, string description)
+    public void UpdateTaskDescription(Guid taskId, string description)
     {
-        if (!tasks.ContainsKey(taskId))
+        var task = _context.Tasks.Find(taskId);
+        if (task == null)
         {
             throw new InvalidOperationException("This task doesn't exist.");
         }
 
-        tasks[taskId].Description = description;
+        task.Description = description;
+        _context.SaveChanges();
     }
-    public void UpdateTaskTitle(string taskId, string title)
+    public void UpdateTaskTitle(Guid taskId, string title)
     {
-        if (!tasks.ContainsKey(taskId))
+        var task = _context.Tasks.Find(taskId);
+        if (task == null)
         {
             throw new InvalidOperationException("This task doesn't exist.");
         }
 
-        tasks[taskId].Title = title;
+        task.Title = title;
+        _context.SaveChanges();
     }
-    public void UpdateTaskDate(string taskId, DateTime date)
+
+    public void UpdateTaskDate(Guid taskId, DateTime date)
     {
-        if (!tasks.ContainsKey(taskId))
+        var task = _context.Tasks.Find(taskId);
+        if (task == null)
         {
             throw new InvalidOperationException("This task doesn't exist.");
         }
 
-        tasks[taskId].DueDate = date;
+        task.DueDate = date;
+        _context.SaveChanges();
     }
 
-    public void DeleteTask(string taskId)
+    public void DeleteTask(Guid taskId)
     {
-        if (tasks.ContainsKey(taskId))
+        var task = _context.Tasks.Find(taskId);
+        if (task != null)
         {
-            tasks[taskId].Complete();
+            _context.Tasks.Remove(task);
+            _context.SaveChanges();
         }
         else
         {

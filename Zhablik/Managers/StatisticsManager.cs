@@ -1,89 +1,101 @@
-//using System.Runtime.InteropServices.JavaScript;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Zhablik.Data;
 using Zhablik.Models;
 
-namespace Zhablik.Managers;
-public class StatisticsManager 
+namespace Zhablik.Managers
 {
-    private Dictionary<string, User> _users { get; set; } = new();
-
-    public Dictionary<string, int> GetDailyStats(string username, DateTime currentDate = default)
+    public class StatisticsManager
     {
-        User user = _users[username]; 
-        int tasksDone = 0;
-        int tasksAssigned = 0;
-        int coinsEarned = 0;
+        private readonly AppDbContext _context;
 
-        if (currentDate == default)
+        public StatisticsManager(AppDbContext context)
         {
-            currentDate = DateTime.Today;
+            _context = context;
         }
-        
-        foreach (var task in user.Tasks)
+
+        public Dictionary<string, int> GetDailyStats(string username, DateTime currentDate = default)
         {
-            if (task.DueDate.Date == currentDate)
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (user == null)
             {
-                tasksAssigned++;
-                
-                if (task.IsComplete)
+                throw new InvalidOperationException($"User {username} does not exist.");
+            }
+
+            if (currentDate == default)
+            {
+                currentDate = DateTime.Today;
+            }
+
+            var tasksDone = 0;
+            var tasksAssigned = 0;
+            var coinsEarned = 0;
+
+            foreach (var task in user.Tasks)
+            {
+                if (task.DueDate.Date == currentDate)
                 {
-                    tasksDone++;
-                    coinsEarned += task.Level * 10;
+                    tasksAssigned++;
+
+                    if (task.IsComplete)
+                    {
+                        tasksDone++;
+                        coinsEarned += task.Level * 10;
+                    }
                 }
             }
+
+            return new Dictionary<string, int>
+            {
+                { "TasksDone", tasksDone },
+                { "TasksAssigned", tasksAssigned },
+                { "CoinsEarned", coinsEarned }
+            };
         }
 
-        return new Dictionary<string, int>
+        public Dictionary<string, int> GetWeeklyStatistics(string username)
         {
-            { "TasksDone", tasksDone },
-            { "TasksAssigned", tasksAssigned },
-            { "CoinsEarned", coinsEarned }
-        };
-    }
+            var tasksDone = 0;
+            var tasksAssigned = 0;
+            var coinsEarned = 0;
 
+            foreach (var day in DateManager.GetDaysOfWeek(DateTime.Today))
+            {
+                var daily = GetDailyStats(username, day);
+                tasksDone += daily["TasksDone"];
+                tasksAssigned += daily["TasksAssigned"];
+                coinsEarned += daily["CoinsEarned"];
+            }
 
-    public Dictionary<string, int> GetWeeklyStatistics(string username)
-    {
-        int tasksDone = 0;
-        int tasksAssigned = 0;
-        int coinsEarned = 0;
-        Dictionary<string, int> daily;
-
-        foreach (var day in DateManager.GetDaysOfWeek(DateTime.Today))
-        {
-            daily = GetDailyStats(username, day);
-            tasksDone += daily["TasksDone"];
-            tasksAssigned += daily["TasksAssigned"];
-            coinsEarned += daily["coinsEarned"];
+            return new Dictionary<string, int>
+            {
+                { "TasksDone", tasksDone },
+                { "TasksAssigned", tasksAssigned },
+                { "CoinsEarned", coinsEarned }
+            };
         }
-        
-        return new Dictionary<string, int>
-        {
-            { "TasksDone", tasksDone },
-            { "TasksAssigned", tasksAssigned },
-            { "CoinsEarned", coinsEarned }
-        };
-    }
 
-    public Dictionary<string, int> GetMonthlyStatistics(string username)
-    {
-        int tasksDone = 0;
-        int tasksAssigned = 0;
-        int coinsEarned = 0;
-        Dictionary<string, int> daily;
-
-        foreach (var day in DateManager.GetDaysOfMonth(DateTime.Today))
+        public Dictionary<string, int> GetMonthlyStatistics(string username)
         {
-            daily = GetDailyStats(username, day);
-            tasksDone += daily["TasksDone"];
-            tasksAssigned += daily["TasksAssigned"];
-            coinsEarned += daily["coinsEarned"];
+            var tasksDone = 0;
+            var tasksAssigned = 0;
+            var coinsEarned = 0;
+
+            foreach (var day in DateManager.GetDaysOfMonth(DateTime.Today))
+            {
+                var daily = GetDailyStats(username, day);
+                tasksDone += daily["TasksDone"];
+                tasksAssigned += daily["TasksAssigned"];
+                coinsEarned += daily["CoinsEarned"];
+            }
+
+            return new Dictionary<string, int>
+            {
+                { "TasksDone", tasksDone },
+                { "TasksAssigned", tasksAssigned },
+                { "CoinsEarned", coinsEarned }
+            };
         }
-        
-        return new Dictionary<string, int>
-        {
-            { "TasksDone", tasksDone },
-            { "TasksAssigned", tasksAssigned },
-            { "CoinsEarned", coinsEarned }
-        };
     }
 }
