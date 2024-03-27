@@ -19,7 +19,7 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<User>()
             .HasMany(u => u.Tasks)
-            .WithOne(a => a.User)
+            .WithOne()
             .HasForeignKey(a => a.UserID)
             .OnDelete(DeleteBehavior.Cascade);
 

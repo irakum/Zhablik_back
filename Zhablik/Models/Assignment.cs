@@ -7,9 +7,8 @@ public class Assignment
     [Key]
     public Guid TaskID { get; set; }
 
-    [ForeignKey("User")]
+    [ForeignKey("User")] 
     public Guid UserID { get; set; }
-    public User User { get; set; }
 
     [Required]
     [MaxLength(255)]
@@ -28,11 +27,10 @@ public class Assignment
     {
         // Empty constructor for Entity Framework Core
     }
-    public Assignment(User user, string title, string description, DateTime dueDate, int level)
+    public Assignment(Guid userId, string title, string description, DateTime dueDate, int level)
     {
         TaskID = Guid.NewGuid();
-        User = user;
-        UserID = user.UserID;
+        UserID = userId;
         Title = title;
         Description = description;
         DueDate = dueDate;

@@ -25,25 +25,35 @@ namespace Zhablik.Managers
             var user = new User(username, email, password);
             _context.Users.Add(user);
             _context.SaveChanges();
+            Console.WriteLine("registered successfully");
             return user;
         }
 
-        public User? Login(string username, string password)
+        public string? Login(string username, string password)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
-            if (user == null)
+            try
             {
-                Console.WriteLine("User not found.");
-                return null;
-            }
+                var user = _context.Users.FirstOrDefault(u => u.Username == username);
+                if (user == null)
+                {
+                    Console.WriteLine("User not found.");
+                    return null;
+                }
 
-            if (user.Password != password)
+                if (user.Password != password)
+                {
+                    Console.WriteLine("Incorrect password.");
+                    return null;
+                }
+
+                return user.UserID.ToString();
+            }
+            catch (Exception e)
             {
-                Console.WriteLine("Incorrect password.");
-                return null;
+                Console.WriteLine(e);
+                throw;
             }
-
-            return user;
+            
         }
     }
 }

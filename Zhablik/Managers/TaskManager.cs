@@ -14,6 +14,7 @@ public class TaskManager
 
     public List<Assignment> GetTasksByUsername(Guid userId)
     {
+        Console.WriteLine(_context.Users.Where(t => t.UserID == userId).ToList()[0].Username);
         var res = _context.Tasks
             .Where(t => t.UserID == userId)
             .ToList();

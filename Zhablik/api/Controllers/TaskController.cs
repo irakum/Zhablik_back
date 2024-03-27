@@ -19,20 +19,20 @@ public class TaskController : ControllerBase
         _taskManager = taskManager;
     }
     
-    [HttpGet("api/tasks/{userId}")]
-    public IActionResult GetTasksForUser(Guid userId)
+    [HttpGet("${userId}")]
+    public IActionResult GetTasksForUser(string userId)
     {
-        var tasks = _taskManager.GetTasksByUsername(userId);
+        var tasks = _taskManager.GetTasksByUsername(new Guid(userId));
         return Ok(new { tasks });
     }
 
     [HttpPost("create")]
-    public IActionResult CreateTask(Guid userID, string title, string description, DateTime dueDate, int level,
+    public IActionResult CreateTask(string userID, string title, string description, DateTime dueDate, int level,
         bool isRepetitive = false, int repetitions = 0, TimeSpan repetitiveness = default)
     {
         try
         {
-            var task = _taskManager.CreateTask(userID, title, description, dueDate, level, 
+            var task = _taskManager.CreateTask(new Guid(userID), title, description, dueDate, level, 
                 isRepetitive, repetitions, repetitiveness);
             return Ok(task);
         }
