@@ -19,7 +19,7 @@ public class TaskController : ControllerBase
         _taskManager = taskManager;
     }
     
-    [HttpGet("${userId}")]
+    [HttpGet("")]
     public IActionResult GetTasksForUser(string userId)
     {
         var tasks = _taskManager.GetTasksByUsername(new Guid(userId));

@@ -43,7 +43,6 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login(LoginRequest request)
     {
-        Console.WriteLine(request.Username + request.Password);
         var user = _authenticationManager.Login(request.Username, request.Password);
         if (user == null)
         {

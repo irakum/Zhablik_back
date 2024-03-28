@@ -29,7 +29,7 @@ namespace Zhablik.Managers
             return user;
         }
 
-        public string? Login(string username, string password)
+        public UserInfoDto? Login(string username, string password)
         {
             try
             {
@@ -46,7 +46,11 @@ namespace Zhablik.Managers
                     return null;
                 }
 
-                return user.UserID.ToString();
+                return new UserInfoDto
+                {
+                    UserId = user.UserID.ToString(),
+                    Username = user.Username
+                };
             }
             catch (Exception e)
             {
